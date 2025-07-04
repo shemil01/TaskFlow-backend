@@ -8,7 +8,6 @@ console.log(name)
   const org = await Organization.create({
     name, 
   });
-  console.log("useid:",req.user.id)
   await User.findByIdAndUpdate(req.user.id, { orgId: org._id });
   res.status(201).json({
     success: true,

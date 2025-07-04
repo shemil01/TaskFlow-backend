@@ -91,19 +91,18 @@ exports.login = async (req, res) => {
     }
   );
 
-res.cookie("accessToken", accessToken, {
-  httpOnly: true,
-  sameSite: "lax",
-  secure: false, 
-});
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+  });
 
-res.cookie("refreshToken", refreshToken, {
-  httpOnly: true,
-  sameSite: "lax",
-  secure: false,
-});
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+  });
 
-  console.log("vv:", req.cookies.accessToken);
   res.status(200).json({
     user: isUserExist,
     accessToken,
@@ -111,7 +110,7 @@ res.cookie("refreshToken", refreshToken, {
     message: "Login successfull",
   });
 };
-     
+
 //  google login
 
 exports.googleAuth = async (req, res) => {
@@ -146,11 +145,13 @@ exports.googleAuth = async (req, res) => {
   );
   res.cookie("accessToken", accessToken);
   res.cookie("refreshToken", refreshToken);
-  res.status(200).json({ user });
+    console.log("vv:", req.cookies.accessToken);
+
+  res.status(200).json({ user, accessToken, refreshToken });
 };
 
 // refresh token
-exports.refresh = async (req, res) => {
+exports.refresh = async (req, res) => {  
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) {
     return res.status(401).send("Login your account");
