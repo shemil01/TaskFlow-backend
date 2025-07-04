@@ -91,13 +91,19 @@ exports.login = async (req, res) => {
     }
   );
 
-  // res.cookie("accessToken", accessToken, {
-  //   httpOnly: true,
-  //   secure: true,
-  //   sameSite: "None",
-  // });
-  // res.cookie("refreshToken", refreshToken);
+res.cookie("accessToken", accessToken, {
+  httpOnly: true,
+  sameSite: "lax",
+  secure: false, 
+});
 
+res.cookie("refreshToken", refreshToken, {
+  httpOnly: true,
+  sameSite: "lax",
+  secure: false,
+});
+
+  console.log("vv:", req.cookies.accessToken);
   res.status(200).json({
     user: isUserExist,
     accessToken,
@@ -105,7 +111,7 @@ exports.login = async (req, res) => {
     message: "Login successfull",
   });
 };
-
+     
 //  google login
 
 exports.googleAuth = async (req, res) => {
@@ -114,6 +120,7 @@ exports.googleAuth = async (req, res) => {
     return res.status(400).json({ message: "Email is required" });
   }
   let user = await User.findOne({ email });
+
   if (!user) {
     user = await User.create({
       name,
@@ -123,7 +130,22 @@ exports.googleAuth = async (req, res) => {
       authType: "google",
     });
   }
-
+  const accessToken = jwt.sign(
+    { id: user._id },
+    process.env.ACCES_TOKEN_SECRET,
+    {
+      expiresIn: "2h",
+    }
+  );
+  const refreshToken = jwt.sign(
+    { id: user._id },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: "1d",
+    }
+  );
+  res.cookie("accessToken", accessToken);
+  res.cookie("refreshToken", refreshToken);
   res.status(200).json({ user });
 };
 

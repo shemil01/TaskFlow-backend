@@ -5,6 +5,10 @@ const authRoute = require("./routes/Auth");
 const organizations = require("./routes/organization");
 const projectRoute = require("./routes/Project");
 const DBconnect = require("./config/db");
+const cookieParser = require("cookie-parser");
+const bodyParser = require('body-parser');
+
+
 
 const app = express();
 
@@ -14,10 +18,13 @@ app.use(
     credentials: true,
   })
 );
-
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
+
 app.use("/api", authRoute);
-app.use("/api", organizations);
+app.use("/api", organizations);      
 app.use("/api", projectRoute);
 
 DBconnect();
