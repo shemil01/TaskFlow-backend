@@ -6,8 +6,6 @@ exports.createProject = async (req, res) => {
   const { name, description } = req.body;
   const user = req.user;
   const currentUser = await User.findById(user.id);
-  console.log(" id::", currentUser);
-  console.log("org id::", user.orgId);
   const project = await Project.create({
     name,
     description,
@@ -20,9 +18,11 @@ exports.createProject = async (req, res) => {
 
 //  get all projects
 exports.getAllProjects = async (req, res) => {
+
+  console.log(req.user.id)
   const projects = await Project.find({ members: req.user.id }).populate(
     "members"
-  );
+  ).populate('createdBy');
   if (!projects) {
     return res.status(404).json({
       success: false,
@@ -67,7 +67,7 @@ exports.editProject = async (req, res) => {
   res.status(200).json({ success: true, project: updatedProject });
 };
 
-// deleate task
+// deleate project
 exports.deleteProject = async (req, res) => {
   const { projectId } = req.params;
 
@@ -75,6 +75,6 @@ exports.deleteProject = async (req, res) => {
 
   res.status(200).json({
     success: true,
-    message: "project deleted",
+    message: "project deleted successfully",
   });
 };

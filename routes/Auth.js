@@ -6,6 +6,7 @@ const { Trycatch } = require("../utils/TryCatch");
 router.post('/signup',Trycatch(controller.register))
 router.post('/login',Trycatch(controller.login))
 router.post('/google-auth',Trycatch(controller.googleAuth))
+router.delete('/logout',Trycatch(controller.logout))
 router.all("/refresh-token", Trycatch(controller.refresh));
 
 module.exports = router

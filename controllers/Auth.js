@@ -62,7 +62,6 @@ exports.login = async (req, res) => {
   }
 
   const isUserExist = await User.findOne({ email });
-
   if (!isUserExist) {
     return res.status(404).json({ message: "User not found" });
   }
@@ -83,6 +82,8 @@ exports.login = async (req, res) => {
       expiresIn: "2h",
     }
   );
+
+
   const refreshToken = jwt.sign(
     { id: isUserExist._id },
     process.env.REFRESH_TOKEN_SECRET,
@@ -91,17 +92,7 @@ exports.login = async (req, res) => {
     }
   );
 
-  res.cookie("accessToken", accessToken, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false,
-  });
-
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false,
-  });
+  // console.log("vv:", req.cookies.accessToken);
 
   res.status(200).json({
     user: isUserExist,
@@ -143,15 +134,28 @@ exports.googleAuth = async (req, res) => {
       expiresIn: "1d",
     }
   );
-  res.cookie("accessToken", accessToken);
-  res.cookie("refreshToken", refreshToken);
-    console.log("vv:", req.cookies.accessToken);
+
 
   res.status(200).json({ user, accessToken, refreshToken });
 };
 
+exports.logout = (req, res) => {
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+  });
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+  });
+
+  res.status(200).json({ message: "Logged out successfully" });
+};
+
 // refresh token
-exports.refresh = async (req, res) => {  
+exports.refresh = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) {
     return res.status(401).send("Login your account");
